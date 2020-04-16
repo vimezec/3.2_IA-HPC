@@ -1,3 +1,77 @@
+# HPC
+
+### Comandos importantes para monitorar recursos computacionais:
+
+* Verificando arquitetura computacional
+```
+lscpu
+```
+
+* monitor de atividade CPU
+
+```
+htop
+```
+
+* monitor de atividade GPU
+
+```
+nvidia-smi
+```
+
+### Carregando container tensorflow
+
+* Container com tensorflow para CPU
+
+    * -it : inicia um terminal para acessar o Container
+    * --rm : remove o container após sair do Container
+
+```    
+docker run -it --rm tensorflow/tensorflow bash
+```
+
+* Container com tensorflow para GPU
+
+    * --runtime=nvidia : utilizar o runtime nvidia para mapear o driver nvidia para o container
+```
+sudo docker run -it --rm --runtime=nvidia tensorflow/tensorflow:latest-gpu bash
+```
+
+* Código para verificar presença da GPU
+
+```
+print(tf.config.list_physical_devices('GPU'))
+
+print(('Is your GPU available for use?\n{0}').format(
+    'Yes, your GPU is available: True' if tf.test.is_gpu_available() == True else 'No, your GPU is NOT available: False'
+))
+
+print(('\nYour devices that are available:\n{0}').format(
+    [device.name for device in tf.config.experimental.list_physical_devices()]
+))
+```
+
+* Container com tensorflow e Jupyter
+
+```
+docker run --gpus all -v /home/silvio/git:/tf -p 8888:8888 --user $(id -u):$(id -g) tensorflow/tensorflow:nightly-gpu-py3-jupyter
+```
+
+   * -v /notebooks:/tf/notebooks : mapeia o diretório local (~/notebooks) para o diretório do container (/tf/notebooks)  
+   * -p 8889:8888 : mapeia porta do container (8889) para porta do host (8888)
+   * Mapeando usuário do host para Container --user $(id -u):$(id -g)
+
+### Configurando conteiner para executar um comando e terminar a execução
+
+```
+docker run -v /home/silvio/git:/tf -it --rm --runtime=nvidia tensorflow/tensorflow:latest-gpu python /tf/tf.py
+```
+
+* Montando Container para treinar Modelo
+
+* Montando Container para realizar inferencias
+
+
 # Docker
 
 ## Testando instalação do docker
@@ -112,3 +186,13 @@ docker image tag bulletinboard:1.0 silviostanzani/bulletinboard:2.0
 docker image push silviostanzani/bulletinboard:2.0
 ```
 
+# Exercício
+* criar conta no docker hub
+* instalar docker
+* executar imagem bulletinboard
+```
+docker login
+docker pull silviostanzani/bulletinboard:1.9
+docker run --publish 8000:8080 silviostanzani/bulletinboard:1.9
+acessar o link localhost:8000 no navegador
+```
